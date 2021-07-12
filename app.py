@@ -61,7 +61,7 @@ app.layout = html.Div(
 )
 def update_output(n_clicks, value):
     fig = get_figure(LEGEND, SCORES)
-    if n_clicks > 0:
+    if 0 < n_clicks < 10:
         if 0 < len(value) < 10:
             text = "you said: " + value
             scores = [0.1 * n_clicks, 0.1]
@@ -69,6 +69,9 @@ def update_output(n_clicks, value):
             return text, fig
         else:
             return "Please add a text between 0 and 10 characters!", fig
+    elif n_clicks == 10:
+        n_clicks = 0
+        return "you clicked 10 times, don't be so pushy!", fig
     else:
         return "", fig
 
