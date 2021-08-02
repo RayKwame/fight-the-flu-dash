@@ -44,39 +44,9 @@ app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
 server = app.server
 
 
-'''def get_figure(filter= None):
-    chart_data =[]
-  
-    if filter == "not_vaccinated":
-        chart_data = [
-        go.Bar(name='Not vaccined', x=data.query('h1n1_vaccine == 0')['h1n1_concern'], y=data.query('h1n1_vaccine == 0')['Percentage']),
-    ]
 
-    elif filter == "vaccinated":
-        chart_data = [
-        go.Bar(name='Vaccined', x=data.query('h1n1_vaccine == 1')['h1n1_concern'], y=data.query('h1n1_vaccine == 1')['Percentage'])
-    ]
 
-    else: 
-        chart_data = [
-        go.Bar(name='Not vaccined', x=data.query('h1n1_vaccine == 0')['h1n1_concern'], y=data.query('h1n1_vaccine == 0')['Percentage']),
-        go.Bar(name='Vaccined', x=data.query('h1n1_vaccine == 1')['h1n1_concern'], y=data.query('h1n1_vaccine == 1')['Percentage'])
-    ]
-
-    fig_plot = go.Figure(data=chart_data,
-    layout=go.Layout(template="simple_white"))
-
-    # Change the bar mode
-    fig_plot.update_layout(barmode='group')
-    fig_plot.update_xaxes(title='Concern of H1N1',
-        ticktext=['Not at all concerned 1', 'Not very concerned', 'Somewhat concerned', 'Very concerned'],
-        tickmode='array', tickvals = [0,1, 2, 3])
-    fig_plot.update_yaxes(title='Percentage of vaccinations')
-        
-    return fig_plot
-
-fig = get_figure()
-'''
+#Function for Vaccine distribution
 
 def get_figure(filter= None):
     chart_data =[]
@@ -123,75 +93,50 @@ def get_figure(filter= None):
 fig = get_figure()
 
 
+#Function for H1N1 Concern
+
+
+data_concern = df.groupby(["h1n1_concern","h1n1_vaccine"],as_index=True)["h1n1_concern"].count().reset_index(name="count")
+def get_figure_concern(filter= None):
+    chart_data =[]
+
+    if filter == "Not vaccinated":
+        chart_data = [
+        go.Bar(name='Not vaccinated', x=data_concern.query('h1n1_vaccine == 0')['h1n1_concern'], y=data_concern.query('h1n1_vaccine == 0')['count'], marker_color='rgb(72,61,139)')
+        ]
+
+    elif filter == "Vaccinated":
+        chart_data = [
+        go.Bar(name='Vaccinated', x=data_concern.query('h1n1_vaccine == 1')['h1n1_concern'], y=data_concern.query('h1n1_vaccine == 1')['count'], marker_color='rgb(60,179,113)')
+        ]  
+
+    else: 
+        chart_data = [
+        go.Bar(name='Not vaccinated', x=data_concern.query('h1n1_vaccine == 0')['h1n1_concern'], y=data_concern.query('h1n1_vaccine == 0')['count'], marker_color='rgb(72,61,139)'),
+        go.Bar(name='Vaccinated', x=data_concern.query('h1n1_vaccine == 1')['h1n1_concern'], y=data_concern.query('h1n1_vaccine == 1')['count'], marker_color='rgb(60,179,113)')
+        ]
+
+    fig_plot = go.Figure(data=chart_data,
+        layout=go.Layout(template="simple_white"))
+
+
+   # Change the bar mode
+    fig_plot.update_layout(barmode='group', title='Concerns about H1N1', barnorm='fraction')
+    fig_plot.update_xaxes(
+        ticktext=['Not at all concerned', 'Not very concerned', 'Somewhat concerned', 'Very concerned'], 
+        tickmode='array', tickvals = [0,1, 2, 3])
+    fig_plot.update_yaxes(title='Share of vaccinations')
+
+    return fig_plot
+
+fig_concern = get_figure_concern()
+
 
 
 
 # Creating plots for the distribution of our target(H1N1) variables 
 
 
-'''def get_figure_targets_H1N1():
-    fig = go.Figure(data=[
-    go.Bar(name='Not vaccinated', x=data1.query('h1n1_vaccine == 0')['h1n1_vaccine'], y=data1.query('h1n1_vaccine == 0')['Percentage']),
-    go.Bar(name='Vaccinated', x=data1.query('h1n1_vaccine == 1')['h1n1_vaccine'], y=data1.query('h1n1_vaccine == 1')['Percentage'])
-],
-    layout=go.Layout(template="simple_white"))
-
-    # Change the bar mode
-    fig.update_layout(barmode='group')
-    fig.update_xaxes(title='Distribution of the H1N1 Target',
-        ticktext=['Vaccinated', 'Not Vaccinated'],
-        tickmode='array', tickvals = [1, 0])
-    fig.update_yaxes(title='Percentage')
-            
-    return fig
-
-fig_targets_H1N1 = get_figure_targets_H1N1()'''
-
-
-
-
-'''# Creating plots for the distribution of our target(Seasonal) variables 
-
-def get_figure_targets_Seas():
-    fig = go.Figure(data=[
-    go.Bar(name='Not vaccinated', x=data2.query('seasonal_vaccine == 0')['seasonal_vaccine'], y=data2.query('seasonal_vaccine == 0')['Percentage']),
-    go.Bar(name='Vaccinated', x=data2.query('seasonal_vaccine == 1')['seasonal_vaccine'], y=data2.query('seasonal_vaccine == 1')['Percentage'])
-],
-    layout=go.Layout(template="simple_white"))
-
-    # Change the bar mode
-    # Change the bar mode
-    fig.update_layout(barmode='group')
-    fig.update_xaxes(title='Distribution of the Seasonal Flu Target',
-        ticktext=['Vaccinated', 'Not Vaccinated'],
-        tickmode='array', tickvals = [1, 0])
-    fig.update_yaxes(title='Percentage')
-            
-    return fig
-
-fig_targets_Seas = get_figure_targets_Seas()'''
-
-
-# Creating plots for the distribution of people with recommendation that shows both vaccinated and not vaccinated
-
-
-def get_figure_targets_doc_recc():
-    fig = go.Figure(data=[
-    go.Bar(name='Not vaccinated', x=data3.query('h1n1_vaccine == 0')['doctor_recc_h1n1'], y=data3.query('h1n1_vaccine == 0')['Percentage']),
-    go.Bar(name='Vaccinated', x=data3.query('h1n1_vaccine == 1')['doctor_recc_h1n1'], y=data3.query('h1n1_vaccine == 1')['Percentage'])
-],
-    layout=go.Layout(template="simple_white"))
-
-    # Change the bar mode
-    fig.update_layout(barmode='group')
-    fig.update_xaxes(title='Distribution of people with doctor´s recommendation for H1N1',
-        ticktext=['Recommended', 'Not Recommended'],
-        tickmode='array', tickvals = [1, 0])
-    fig.update_yaxes(title='Percentage')
-            
-    return fig
-
-fig_targets_H1N1_doc_recc = get_figure_targets_doc_recc()
 
 
 def get_default_bar(data):
@@ -201,6 +146,9 @@ default_bar= get_default_bar(data)
 
 
 default_bar = get_figure()
+default_bar_concern = get_figure_concern()
+
+
 app.layout = html.Div(
     
 
@@ -237,7 +185,41 @@ app.layout = html.Div(
                 "maxWidth": "800px",
                 "padding": "10px 20px",
             },
-        ),           
+        ), 
+
+        
+        html.Div(
+            children=[
+                html.H2("Inputs"),
+                html.Div(
+                    children=[
+                        html.P("H1N1 Concern"),
+                        dcc.Dropdown(
+                            id="Concern-dropdown",
+                            options=[
+                                {"label": "Both", "value": "both"},
+                                {"label": "Not Vaccinated", "value": "not_vaccinated"},
+                                {"label": "Vaccinated", "value": "vaccinated"},
+                            ],
+                            value="both",
+                        ),
+                    ],
+                ),
+               
+            ],
+
+               # mit style kann man CSS-Formatierungen verwenden
+            style={
+                "backgroundColor": "#DDDDDD",
+                "maxWidth": "800px",
+                "padding": "10px 20px",
+            },
+        ), 
+
+
+
+        
+
         html.Div(
             children=[
                 html.H2("bar-chart"),
@@ -246,6 +228,13 @@ app.layout = html.Div(
            
         ),
 
+        html.Div(
+            children=[
+                html.H2("bar-chart"),
+                dcc.Graph(id="bar-chart_1", figure=default_bar_concern),
+            ],
+           
+        ),
 
         #html.Button("Submit", id="textarea-state-example-button", n_clicks=0),
         #html.
@@ -261,14 +250,18 @@ app.layout = html.Div(
 @app.callback(
     
     #Output("textarea-state-example-output", "children"),
-    Output("bar-chart", "figure"),
+    [Output("bar-chart", "figure"),
+     Output("bar-chart_1", "figure")
+    ],
     
-    Input("Distribution-dropdown", "value"), #Input("n-input", "value")],
+   [ Input("Distribution-dropdown", "value"),
+   Input("Concern-dropdown", "value")
+   ], #Input("n-input", "value")],
     #State("Distribution-dropdown", "value"),
 )
 def update_output(value):
 
-    return get_figure(value)
+    return get_figure(value), get_figure_concern(value)
 
 
 
