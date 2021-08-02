@@ -100,28 +100,35 @@ data_concern = df.groupby(["h1n1_concern","h1n1_vaccine"],as_index=True)["h1n1_c
 def get_figure_concern(filter= None):
     chart_data =[]
 
-    if filter == "Not vaccinated":
+    if filter == "not_vaccinated":
         chart_data = [
         go.Bar(name='Not vaccinated', x=data_concern.query('h1n1_vaccine == 0')['h1n1_concern'], y=data_concern.query('h1n1_vaccine == 0')['count'], marker_color='rgb(72,61,139)')
         ]
 
-    elif filter == "Vaccinated":
+        fig_plot = go.Figure(data=chart_data,
+        layout=go.Layout(template="simple_white")) 
+        fig_plot.update_layout(barmode='group', title='Concerns about H1N1') #barnorm='fraction'
+
+    elif filter == "vaccinated":
         chart_data = [
         go.Bar(name='Vaccinated', x=data_concern.query('h1n1_vaccine == 1')['h1n1_concern'], y=data_concern.query('h1n1_vaccine == 1')['count'], marker_color='rgb(60,179,113)')
-        ]  
-
+        ] 
+        fig_plot = go.Figure(data=chart_data,
+        layout=go.Layout(template="simple_white")) 
+        fig_plot.update_layout(barmode='group', title='Concerns about H1N1') #barnorm='fraction'
     else: 
         chart_data = [
         go.Bar(name='Not vaccinated', x=data_concern.query('h1n1_vaccine == 0')['h1n1_concern'], y=data_concern.query('h1n1_vaccine == 0')['count'], marker_color='rgb(72,61,139)'),
         go.Bar(name='Vaccinated', x=data_concern.query('h1n1_vaccine == 1')['h1n1_concern'], y=data_concern.query('h1n1_vaccine == 1')['count'], marker_color='rgb(60,179,113)')
         ]
-
-    fig_plot = go.Figure(data=chart_data,
+        fig_plot = go.Figure(data=chart_data,
         layout=go.Layout(template="simple_white"))
+        fig_plot.update_layout(barmode='group', title='Concerns about H1N1', barnorm='fraction') 
+
+    
 
 
    # Change the bar mode
-    fig_plot.update_layout(barmode='group', title='Concerns about H1N1', barnorm='fraction')
     fig_plot.update_xaxes(
         ticktext=['Not at all concerned', 'Not very concerned', 'Somewhat concerned', 'Very concerned'], 
         tickmode='array', tickvals = [0,1, 2, 3])
@@ -139,10 +146,10 @@ fig_concern = get_figure_concern()
 
 
 
-def get_default_bar(data):
+'''def get_default_bar(data):
     return px.bar(data)
 
-default_bar= get_default_bar(data)
+default_bar= get_default_bar(data)'''
 
 
 default_bar = get_figure()
@@ -187,7 +194,15 @@ app.layout = html.Div(
             },
         ), 
 
-        
+        html.Div(
+            children=[
+                html.H2("bar-chart"),
+                dcc.Graph(id="bar-chart", figure=default_bar),
+            ],
+           
+        ),
+
+
         html.Div(
             children=[
                 html.H2("Inputs"),
@@ -216,18 +231,6 @@ app.layout = html.Div(
             },
         ), 
 
-
-
-        
-
-        html.Div(
-            children=[
-                html.H2("bar-chart"),
-                dcc.Graph(id="bar-chart", figure=default_bar),
-            ],
-           
-        ),
-
         html.Div(
             children=[
                 html.H2("bar-chart"),
@@ -250,20 +253,33 @@ app.layout = html.Div(
 @app.callback(
     
     #Output("textarea-state-example-output", "children"),
-    [Output("bar-chart", "figure"),
-     Output("bar-chart_1", "figure")
-    ],
-    
-   [ Input("Distribution-dropdown", "value"),
-   Input("Concern-dropdown", "value")
-   ], #Input("n-input", "value")],
+    Output("bar-chart", "figure"),
+  
+
+    Input("Distribution-dropdown", "value"),
+
+    #Input("n-input", "value")],
     #State("Distribution-dropdown", "value"),
 )
 def update_output(value):
 
-    return get_figure(value), get_figure_concern(value)
+    return get_figure(value)#, get_figure_concern(value)
 
 
+
+
+@app.callback(
+    
+    
+     Output("bar-chart_1", "figure")
+    ,
+     Input("Concern-dropdown", "value")
+    #Input("n-input", "value")],
+    #State("Distribution-dropdown", "value"),
+)
+def update_output_concern(value):
+
+    return get_figure_concern(value)
 
 # Add the server clause:
 if __name__ == "__main__":
