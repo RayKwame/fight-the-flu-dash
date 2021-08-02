@@ -139,28 +139,70 @@ def get_figure_targets_doc_recc():
 fig_targets_H1N1_doc_recc = get_figure_targets_doc_recc()
 
 
-
+def get_default_bar():
+    return px.bar(data)
 
 
 app.layout = html.Div(
-    [
+    
+
+    children=[
+        
         html.H2(
             id="title",
-            children="Neuefische Interactive Dash Plotly Dashboard",
+            children="Flushot Interactive Dashboard",
         ),
-        html.H3(
-            id="subtitle",
-            children="Add some fish text and click, and the chart will change",
+        html.H1(children="Vaccination_Distribution"),
+        html.Div(
+            children=[
+                html.H2("Inputs"),
+                html.Div(
+                    children=[
+                        html.P("Vaccination_Distribution"),
+                        dcc.Dropdown(
+                            id="Distribution-dropdown",
+                            options=[
+                                {"label": "Both_Shots", "value": "Both_Shots"},
+                                {"label": "H1N1_Shots", "value": "H1N1_Shots"},
+                                {"label": "Seasonal_Flu_Shot", "value": "Seasonal_Flu_Shot"},
+                            ],
+                            value="Both_Shots",
+                        ),
+                    ],
+                ),
+                html.Div(
+                    children=[
+                        html.P("Sample Size"),
+                        dcc.Input(
+                            id="n-input",
+                            placeholder="Sample Size",
+                            type="number",
+                            value=100,
+                        ),
+                    ],
+                ),
+            ],
+
+               # mit style kann man CSS-Formatierungen verwenden
+            style={
+                "backgroundColor": "#DDDDDD",
+                "maxWidth": "800px",
+                "padding": "10px 20px",
+            },
+        ),            
+        html.Div(
+            children=[
+                html.H2("bar-chart"),
+                dcc.Graph(id="bar-chart", figure=fig),
+            ],
+           
         ),
-        html.Div(children="Add some text you want (less than 10 characters)!"),
-        dcc.Textarea(
-            id="textarea-state-example",
-            value="",
-            style={"width": "100%", "height": 100},
-        ),
-        html.Button("Submit", id="textarea-state-example-button", n_clicks=0),
+
+
+        #html.Button("Submit", id="textarea-state-example-button", n_clicks=0),
+        #html.
         html.Div(id="textarea-state-example-output", style={"whiteSpace": "pre-line"}),
-        dcc.Graph(id="bar-chart", figure=fig),
+        #dcc.Graph(id="bar-chart", figure=fig),
         dcc.Graph(id="bar-chart_1", figure=fig_targets_H1N1),
         dcc.Graph(id="bar-chart_2", figure=fig_targets_Seas),
         dcc.Graph(id="bar-chart_3", figure=fig_targets_H1N1_doc_recc),
@@ -170,29 +212,31 @@ app.layout = html.Div(
 # https://dash.plotly.com/basic-callbacks
 @app.callback(
     [
-        Output("textarea-state-example-output", "children"),
+        #Output("textarea-state-example-output", "children"),
         Output("bar-chart", "figure"),
     ],
-    Input("textarea-state-example-button", "n_clicks"),
-    State("textarea-state-example", "value"),
+    Input("Distribution-dropdown", "value"),
+    #State("textarea-state-example", "value"),
 )
-def update_output(n_clicks, value):
-    fig = get_figure() #LEGEND, SCORES
-    if 0 < n_clicks < 10:
-        if 0 < len(value) < 10:
-            text = "you said: " + value
-            scores = [0.1 * n_clicks, 0.1]
-            fig = get_figure() #LEGEND, scores
-            return text, fig
-        else:
-            return "Please add a text between 0 and 10 characters!", fig
-    elif n_clicks == 10:
-        n_clicks = 0
-        return "you clicked 10 times, don't be so pushy!", fig
-    else:
-        return "", fig
+def update_output(Vaccination_Distribution):
+    d = None
+    if Vaccination_Distribution == "Both_Shots":
+        d = data
+    elif Vaccination_Distribution == "H1N1_Shots":
+        d = data1
+    elif Vaccination_Distribution == "Seasonal_Flu_Shot":
+        d = data2
+    return px.bar(d)
+
 
 
 # Add the server clause:
 if __name__ == "__main__":
     app.run_server()
+
+
+
+
+
+
+    
